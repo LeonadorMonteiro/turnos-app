@@ -85,6 +85,11 @@
     .appt { grid-template-columns: 60px 1fr; }
     .appt-side { grid-column: 1 / -1; flex-direction: row; justify-content: space-between; align-items: center; }
   }
+  .demo { margin-top:20px; padding-top:18px; border-top:1px solid var(--line); }
+  .demo p { color:var(--muted); font-size:14px; margin-bottom:10px; }
+  .demo-btns { display:flex; gap:8px; flex-wrap:wrap; }
+  .btn-ghost { background:transparent; color:var(--accent); border:1px solid var(--accent); border-radius:999px; padding:9px 16px; font:inherit; font-size:14px; font-weight:600; cursor:pointer; transition:background .15s; }
+  .btn-ghost:hover { background:var(--soft); }
   @media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
 </style>
 </head>
@@ -121,6 +126,13 @@
       <label for="password">Password</label>
       <input id="password" type="password" autocomplete="current-password" placeholder="Your password" required>
       <button class="btn block" id="submitBtn" type="submit">Log in</button>
+      <div class="demo">
+        <p>Just looking around? Try the app without creating an account.</p>
+        <div class="demo-btns">
+          <button type="button" class="btn-ghost" id="demoClient">Explore as a client</button>
+          <button type="button" class="btn-ghost" id="demoOwner">Explore as a business owner</button>
+        </div>
+      </div>
     </form>
   </div>
 
@@ -260,6 +272,16 @@ $('authForm').onsubmit = async (ev) => {
     await login();
   } catch (e) { show(e.message, false); }
 };
+async function demoLogin(email) {
+  try {
+    const data = await api('/login', 'POST', { email: email, password: 'demo1234' });
+    token = data.token;
+    try { localStorage.setItem('token', token); } catch (e) {}
+    await render();
+  } catch (e) { show(e.message, false); }
+}
+$('demoClient').onclick = () => demoLogin('cliente@demo.com');
+$('demoOwner').onclick = () => demoLogin('aurora@demo.com');
 $('logoutBtn').onclick = logout;
 $('addSvcBtn').onclick = async () => {
   try {
